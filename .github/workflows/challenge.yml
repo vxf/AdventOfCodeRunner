@@ -1,0 +1,50 @@
+name: Advent Challenge
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check vxf
+        uses: actions/checkout@master
+        with:
+          repository: vxf/AdventOfCode
+          path: vxf
+
+      - name: Check falsovsky
+        uses: actions/checkout@master
+        with:
+          repository: falsovsky/advent2021
+          path: falso
+
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+            toolchain: nightly
+            override: true
+
+      - name: Install python toolchain
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.10'
+          architecture: 'x64'
+
+      - name: Run vxf python
+        run: find ./2021 -name 'solve.py' -exec time python {} \;
+        working-directory: vxf
+        
+      - name: Run falso rust
+        run: >-
+          for file in ./src/*.rs;
+          do
+            echo "$file";
+            file=$(basename -- "$file");
+            echo "$file";
+            file="${file%.*}";
+            echo "$file";
+            cargo build --bin "$file";
+            time cargo run --bin "$file";
+          done
+        working-directory: falso
