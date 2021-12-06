@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  run-vxf-python:
     runs-on: ubuntu-latest
     steps:
       - name: Check vxf
@@ -13,39 +13,31 @@ jobs:
           repository: vxf/AdventOfCode
           path: vxf
 
+      - name: Install python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.10'
+          architecture: 'x64'
+
+      - name: Run vxf python
+        run: find ./2021 -name 'solve.py' -exec time python {} \;
+        working-directory: vxf
+
+  run-falso-rust:
+    runs-on: ubuntu-latest
+    steps:
       - name: Check falsovsky
         uses: actions/checkout@master
         with:
           repository: falsovsky/advent2021
           path: falso
 
-      - name: Check trex
-        uses: actions/checkout@master
-        with:
-          repository: t-recx/aoc2021
-          path: trex
-
       - name: Install Rust toolchain
         uses: actions-rs/toolchain@v1
         with:
             toolchain: nightly
             override: true
-
-      - name: Install python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.10'
-          architecture: 'x64'
-          
-      - name: Install ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: '2.7'
-
-      - name: Run vxf python
-        run: find ./2021 -name 'solve.py' -exec time python {} \;
-        working-directory: vxf
-        
+  
       - name: Run falso rust
         run: >-
           for file in ./src/*.rs;
@@ -59,3 +51,17 @@ jobs:
             time cargo run --bin "$file";
           done
         working-directory: falso
+
+  run-trex:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check trex
+        uses: actions/checkout@master
+        with:
+          repository: t-recx/aoc2021
+          path: trex
+
+      - name: Install ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '2.7'
