@@ -19,6 +19,12 @@ jobs:
           repository: falsovsky/advent2021
           path: falso
 
+      - name: Check trex
+        uses: actions/checkout@master
+        with:
+          repository: t-recx/aoc2021
+          path: trex
+
       - name: Install Rust toolchain
         uses: actions-rs/toolchain@v1
         with:
